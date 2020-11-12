@@ -1,0 +1,35 @@
+@charset "UTF-8";
+/**
+ * 下方引入的为uView UI的集成样式文件，为scss预处理器，其中包含了一些"u-"开头的自定义变量
+ * uView自定义的css类名和scss变量，均以"u-"开头，不会造成冲突，请放心使用 
+ */
+page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: -webkit-linear-gradient(top, #efc480 0%, #f8dca5 25%, white 98%);
+  background: linear-gradient(180deg, #efc480 0%, #f8dca5 25%, white 98%);
+}
+.login-header .bg-logo {
+  width: 640rpx;
+  height: 300rpx;
+}
+.login-type .title {
+  font-weight: bold;
+  color: #845708;
+}
+.login-type .title.active {
+  border-bottom: 2rpx solid #e9b562;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+}
+.input-login {
+  border-bottom: 1px solid #eed8b2;
+}
+.get-code {
+  -webkit-flex-basis: 40%;
+          flex-basis: 40%;
+  text-align: center;
+  color: #845708;
+}
+

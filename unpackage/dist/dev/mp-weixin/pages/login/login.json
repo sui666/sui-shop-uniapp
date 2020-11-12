@@ -1,0 +1,10 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white",
+  "navigationBarTitleText": "用户登录",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "u-navbar": "/uview-ui/components/u-navbar/u-navbar",
+    "u-button": "/uview-ui/components/u-button/u-button"
+  }
+}
