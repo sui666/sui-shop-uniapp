@@ -1,6 +1,8 @@
 import {
 	API_URL
 } from '@/env.js'
+import RsaConfig from '@/common/config.js'
+import JSEncrypt from 'jsencrypt'
 
 // 这里的Vue为Vue对象(非创建出来的实例)，vm为main.js中“Vue.use(httpInterceptor, app)”这一句的第二个参数，
 // 为一个Vue的实例，也即每个页面的"this"
@@ -22,7 +24,6 @@ const install = (Vue, vm) => {
 			'content-type': 'application/json;charset=UTF-8'
 		}
 	});
-
 	// 请求拦截，配置Token等参数
 	Vue.prototype.$u.http.interceptor.request = (config) => {
 		// 引用token
@@ -32,22 +33,46 @@ const install = (Vue, vm) => {
 
 		// 方式二，如果没有使用uView封装的vuex方法，那么需要使用$store.state获取
 		// config.header.token = vm.$store.state.token;
-		 const token = uni.getStorageSync('token');
-		 
-		 if(token == '') {
-			 uni.navigateTo({
-			      url: "/pages/login/login",
-			                 });
-		 }
-		 let plation_type = {
-			 "app_type": "h5",
-			 "app_type_name": "H5"
-		 }
-		 Object.assign(config.data, {token: token}, plation_type)
-		 console.log('---------请求参数---------------')
-		 console.log(config.data)
-		 console.log('---------请求参数---------------')
-		 return config;
+		const token = uni.getStorageSync('token') || '';
+		let tokenObj = {token:token}
+		
+		if (token == '') {
+			uni.navigateTo({
+				url: "/pages/login/login",
+			});
+		}
+		let plation_type = {
+			"app_type": "h5",
+			"app_type_name": "H5"
+		}
+
+
+		if (!RsaConfig.apiEncrypt) {
+			Object.assign(config.data, tokenObj, plation_type)
+			// 没有加密
+		} else {
+
+			let requestParams = config.data;
+			Object.assign(requestParams,tokenObj)
+			config.data = {};
+
+			let jsencrypt = new JSEncrypt();
+			jsencrypt.setPublicKey(RsaConfig.publicKey);
+			let encrypt = encodeURIComponent(jsencrypt.encrypt(JSON.stringify(requestParams)));
+
+			let encryptRes = {
+				encrypt: encrypt
+			};
+
+			Object.assign(config.data, encryptRes, plation_type)
+
+		}
+
+		console.log('---------请求参数---------------')
+		console.table(config.data)
+		console.log('---------请求参数---------------')
+
+		return config;
 		// console.log(vm.$store.state.vuex_token)
 		// 方式三，如果token放在了globalData，通过getApp().globalData获取
 		// config.header.token = getApp().globalData.username;
@@ -72,26 +97,42 @@ const install = (Vue, vm) => {
 		// if(config.url == '/user/rest') return false; // 取消某次请求
 	}
 
-	// // 响应拦截，判断状态码是否通过
+	// 响应拦截，判断状态码是否通过
 	// Vue.prototype.$u.http.interceptor.response = (res) => {
-	// 	if (res.code == 200) {
-	// 		// res为服务端返回值，可能有code，result等字段
-	// 		// 这里对res.result进行返回，将会在this.$u.post(url).then(res => {})的then回调中的res的到
-	// 		// 如果配置了originalData为true，请留意这里的返回值
-	// 		return res.result;
-	// 	} else if (res.code == 201) {
-	// 		// 假设201为token失效，这里跳转登录
-	// 		vm.$u.toast('验证失败，请重新登录');
-	// 		setTimeout(() => {
-	// 			// 此为uView的方法，详见路由相关文档
-	// 			vm.$u.route('/pages/user/login')
-	// 		}, 1500)
-	// 		return false;
-	// 	} else {
-	// 		// 如果返回false，则会调用Promise的reject回调，
-	// 		// 并将进入this.$u.post(url).then().catch(res=>{})的catch回调中，res为服务端的返回值
-	// 		return false;
-	// 	}
+
+
+	// 	// if(!RsaConfig.apiEncrypt) {
+	// 	// 			 // 没有加密
+	// 	// }else{
+	// 	// 			 let jsencrypt = new JSEncrypt();
+	// 	// 			 	jsencrypt.setPublicKey(RsaConfig.publicKey);
+
+	// 	// 			 let encrypt = encodeURIComponent(jsencrypt.encryptLong(JSON.stringify(config.data)));
+	// 	// 			 let encryptRes = { 
+	// 	// 			 	encrypt:encrypt 
+	// 	// 			  };
+	// 	// 			  console.log(encrypt)
+	// 	// 			  Object.assign(config.data, {token: token}, plation_type)
+	// 	// }
+	// 	// return res.result;
+	// 	// if (res.code == 200) {
+	// 	// 	// res为服务端返回值，可能有code，result等字段
+	// 	// 	// 这里对res.result进行返回，将会在this.$u.post(url).then(res => {})的then回调中的res的到
+	// 	// 	// 如果配置了originalData为true，请留意这里的返回值
+	// 	// 	return res.result;
+	// 	// } else if (res.code == 201) {
+	// 	// 	// 假设201为token失效，这里跳转登录
+	// 	// 	vm.$u.toast('验证失败，请重新登录');
+	// 	// 	setTimeout(() => {
+	// 	// 		// 此为uView的方法，详见路由相关文档
+	// 	// 		vm.$u.route('/pages/user/login')
+	// 	// 	}, 1500)
+	// 	// 	return false;
+	// 	// } else {
+	// 	// 	// 如果返回false，则会调用Promise的reject回调，
+	// 	// 	// 并将进入this.$u.post(url).then().catch(res=>{})的catch回调中，res为服务端的返回值
+	// 	// 	return false;
+	// 	// }
 	// }
 }
 

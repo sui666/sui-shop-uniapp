@@ -51,7 +51,7 @@
 		<u-popup :closeable="true" v-model="show"  mode="bottom">
 			<view class="goods-sku-box u-p-30 u-font-24">
 				<view class="header u-border-bottom u-flex ">
-					<view class="left">
+					<!-- <view class="left">
 						<image mode="aspectFit" :src="getImgUrl(goods_info.sku_image)"></image>
 					</view>
 					<view class="right">
@@ -61,7 +61,7 @@
 						<view class="u-font-28 stock u-margin-y-5">库存{{goods_info.stock}} 件</view>
 						<view class="u-font-24 choice">已选择: 尺码 颜色</view>
 						<view class="u-font-24 u-padding-y-10">总价:¥ {{ totalPrice }}</view>
-					</view>
+					</view> -->
 					
 				</view>
 				<view class="sku-info-box">
@@ -102,29 +102,18 @@ export default {
 			tab_cur: 0,
 			goods_number: 1,
 			goods_info : {},
-			banner: [
-				{
-					image: 'https://cdn.uviewui.com/uview/swiper/2.jpg',
-					title: '身无彩凤双飞翼，心有灵犀一点通'
-				},
-				{
-					image: 'https://cdn.uviewui.com/uview/swiper/3.jpg',
-					title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
-				},
-				{
-					image: 'https://cdn.uviewui.com/uview/swiper/3.jpg',
-					title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
-				}
-			]
+			banner: []
 		};
 	},
 	computed:{
 		 totalPrice: function() {
 			 return this.goods_number * this.goods_info.price
 		  },
+		  
 		  ...mapState({
 			  cartNumber: state => state.cartNumber
 		   })
+		   
 	},
 	onLoad(e) {
 		this.sku_id = e.sku_id || '20';
@@ -169,11 +158,16 @@ export default {
 			this.is_add_cart =true;
 			this.show = true;
 		},
-		previewimage(e){
-		  console.log(e)	
-		  // uni.previewImage({
-		  	
-		  // })
+		previewimage(index){
+		  let imgs = [];
+		  this.banner.map(item => {
+			  imgs.push(item.image);
+		  })
+		  console.log(imgs)
+		  uni.previewImage({
+			current:index,
+		  	urls: imgs
+		  })
 		},
 		getSku() {
 			let params = {sku_id: this.sku_id};
@@ -181,6 +175,7 @@ export default {
 				console.log()
 				if(res.code == 0){
 					this.goods_info = res.data.goods_sku_detail;
+					this.banner = this.getImgUrl(res.data.goods_sku_detail.sku_images,true);
 					this.sku_spec_format = res.data.goods_sku_detail.sku_spec_format;
 					if(res.data.goods_sku_detail.goods_spec_format) this.goods_spec_format = JSON.parse(res.data.goods_sku_detail.goods_spec_format);
 					// console.log(JSON.stringify(JSON.parse(this.goods_spec_format)))

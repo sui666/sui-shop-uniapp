@@ -11,7 +11,7 @@
 		<view class="u-m-y-30 u-font-lg u-text-center">--- 精品推荐 ---</view>
 		<view class="list u-m-x-20">
 			<view :key="index" v-for="(item, index) in list" class="list-cell u-flex u-row-center">
-				<view class="inner-cell" @tap="goGoodsInfo(item.sku_id)">
+				<view class="inner-cell " @tap="goGoodsInfo(item.sku_id)">
 					<view class="goods-img">
 						<image :src="getImgUrl(item.sku_image)" mode="aspectFill"></image>
 					</view>
@@ -141,7 +141,9 @@ page {
 			margin: 0 2.5% 2.5% 0%;
 			padding: 10rpx;
 			.inner-cell {
+				padding-top: 10rpx;
 				.goods-img {
+					margin: 0 auto;
 					width: 306rpx ;
 					height: 306rpx;
 					overflow: hidden;
