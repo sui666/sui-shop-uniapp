@@ -51,7 +51,7 @@
 		<u-popup :closeable="true" v-model="show"  mode="bottom">
 			<view class="goods-sku-box u-p-30 u-font-24">
 				<view class="header u-border-bottom u-flex ">
-					<!-- <view class="left">
+					<view class="left">
 						<image mode="aspectFit" :src="getImgUrl(goods_info.sku_image)"></image>
 					</view>
 					<view class="right">
@@ -61,7 +61,7 @@
 						<view class="u-font-28 stock u-margin-y-5">库存{{goods_info.stock}} 件</view>
 						<view class="u-font-24 choice">已选择: 尺码 颜色</view>
 						<view class="u-font-24 u-padding-y-10">总价:¥ {{ totalPrice }}</view>
-					</view> -->
+					</view>
 					
 				</view>
 				<view class="sku-info-box">
